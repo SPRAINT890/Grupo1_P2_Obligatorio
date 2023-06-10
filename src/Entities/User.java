@@ -1,20 +1,27 @@
 package Entities;
 
+import uy.edu.um.prog2.adt.MyHash.HashTableCerradoImpl;
+
 public class User {
-    private long id;
+    private Long id;
 
     private String name;
 
-    public User(long id, String name) {
+    private HashTableCerradoImpl<Long, Tweet> listTweets;
+    public User(Long id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
     public String getName() {
         return name;
+    }
+
+    public HashTableCerradoImpl<Long, Tweet> getListTweets() {
+        return listTweets;
     }
 }
