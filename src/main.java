@@ -1,3 +1,5 @@
+import Entities.HashTag;
+import Entities.Tweet;
 import Entities.User;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
@@ -12,9 +14,11 @@ import static java.lang.Long.parseLong;
 
 
 public class main {
-    static Long idTweet = Long.valueOf(0);
+    static Long idUser = Long.valueOf(0);
     static Long idHastag = Long.valueOf(0);
-    static HashTableCerradoImpl<Long, User> listaUsuariosRegistrados = new HashTableCerradoImpl<>(10);
+    static HashTableCerradoImpl<String, User> usuariosRegistrados = new HashTableCerradoImpl<>(5);
+    static HashTableCerradoImpl<Long, HashTag> hastagRegistrados = new HashTableCerradoImpl<>(5);
+    static HashTableCerradoImpl<Long, Tweet> tweetsRegistrados = new HashTableCerradoImpl<>(5);
     public static void top_drivers(){
 
     }
@@ -58,24 +62,18 @@ public class main {
                 String source = record.get("source");
                 String is_retweet = record.get("is_retweet");
 
-                System.out.println("id " + id);
-                System.out.println("nombre " + user_name);
-                System.out.println(user_location);
-                System.out.println(user_description);
-                System.out.println(user_created);
-                System.out.println(user_followers);
-                System.out.println(user_friends);
-                System.out.println(user_favourites);
-                System.out.println(user_verified);
-                System.out.println(text);
-                System.out.println(hashtags);
-                System.out.println(source);
-                System.out.println(is_retweet);
-                System.out.println("-------------------------");
-
                 if (id != null){
-                    User newUser = new User(parseLong(id), user_name);
-                    listaUsuariosRegistrados.insert(parseLong(id), newUser);
+                    User newUser = new User(idUser, user_name);
+                    Tweet newTweet = new Tweet(newUser, Long.valueOf(id), text, source, Boolean.valueOf(is_retweet));
+                    HashTag newHashtag = new HashTag(idHastag, hashtags);
+
+                    User isFound = usuariosRegistrados.search(user_name);
+                    if (isFound == null){
+                        newUser.getListTweets().insert(Long.valueOf(id), newTweet);
+                        usuariosRegistrados.insert(user_name, newUser);
+                    }else {
+
+                    }
                 }
 
             }
