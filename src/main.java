@@ -10,15 +10,13 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.Scanner;
 
-import static java.lang.Long.parseLong;
-
 
 public class main {
     static Long idUser = Long.valueOf(0);
     static Long idHastag = Long.valueOf(0);
-    static HashTableCerradoImpl<String, User> usuariosRegistrados = new HashTableCerradoImpl<>(5);
-    static HashTableCerradoImpl<Long, HashTag> hastagRegistrados = new HashTableCerradoImpl<>(5);
-    static HashTableCerradoImpl<Long, Tweet> tweetsRegistrados = new HashTableCerradoImpl<>(5);
+    static HashTableCerradoImpl<String, User> usuariosRegistrados = new HashTableCerradoImpl<>(3000);
+    static HashTableCerradoImpl<String, HashTag> hastagRegistrados = new HashTableCerradoImpl<>(3000);
+    static HashTableCerradoImpl<Long, Tweet> tweetsRegistrados = new HashTableCerradoImpl<>(3000);
     public static void top_drivers(){
 
     }
@@ -62,17 +60,38 @@ public class main {
                 String source = record.get("source");
                 String is_retweet = record.get("is_retweet");
 
-                if (id != null){
-                    User newUser = new User(idUser, user_name);
-                    Tweet newTweet = new Tweet(newUser, Long.valueOf(id), text, source, Boolean.valueOf(is_retweet));
-                    HashTag newHashtag = new HashTag(idHastag, hashtags);
+                //cargo el tweet sin usuario ni hashtag
+                Tweet newTweet = new Tweet(Long.valueOf(id), text, source, Boolean.valueOf(is_retweet));
+                tweetsRegistrados.insert(Long.valueOf(id), newTweet);
 
-                    User isFound = usuariosRegistrados.search(user_name);
-                    if (isFound == null){
-                        newUser.getListTweets().insert(Long.valueOf(id), newTweet);
-                        usuariosRegistrados.insert(user_name, newUser);
-                    }else {
+                //verifico si el usuario existe y le agrego el tweet
+                User newUser = new User(idUser, user_name);
+                User isFoundUser = usuariosRegistrados.search(user_name);
+                if (isFoundUser == null){
+                    newUser.getListTweets().insert(Long.valueOf(id), newTweet);
+                    usuariosRegistrados.insert(user_name, newUser);
+                    idUser++;
+                    newTweet.setUsuario(newUser);
+                }else {
+                    isFoundUser.getListTweets().insert(Long.valueOf(id), newTweet);
+                    newTweet.setUsuario(isFoundUser);
+                }
 
+                //verifico si el hashtag existe
+                if (hashtags.contains("[")){
+                    String[] hastagConverted = hashtags.substring(2, hashtags.length() - 2).split("', '");
+                    for (int i = 0; i<hastagConverted.length; i++){
+                        HashTag isFoundHashtag = hastagRegistrados.search(hastagConverted[i]);
+                        if (isFoundHashtag != null){
+                            newTweet.getListHastag().insert(isFoundHashtag.getId(), isFoundHashtag);
+                            isFoundHashtag.getListTweetUsed().insert(newTweet.getId(), newTweet);
+                        }else{
+                            HashTag newHashtag = new HashTag(idHastag, hastagConverted[i]);
+                            idHastag++;
+                            newTweet.getListHastag().insert(newHashtag.getId(), newHashtag);
+                            newHashtag.getListTweetUsed().insert(newTweet.getId(), newTweet);
+                            hastagRegistrados.insert(newHashtag.getText(), newHashtag);
+                        }
                     }
                 }
 
@@ -81,6 +100,16 @@ public class main {
             e.printStackTrace();
         }
     }
+    public static void loadHashtag(String hashtags){
+        String[] hastagConverted = hashtags.substring(2, hashtags.length() - 2).split("', '");
+        for (int i = 0; i<hastagConverted.length; i++){
+            HashTag isFound = hastagRegistrados.search(hastagConverted[i]);
+            if (isFound != null){
+
+            }
+        }
+    }
+
     public static void main(String[] args) throws InterruptedException {
         Scanner entrada = new Scanner(System.in);
         load_csv();

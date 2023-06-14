@@ -4,17 +4,20 @@ import uy.edu.um.prog2.adt.MyHash.HashTableCerradoImpl;
 
 public class Tweet {
     private User usuario;
+
     private Long id;
     private String content;
     private String source;
     private Boolean isRetweet;
-    private HashTableCerradoImpl<Long, HashTag> listHastag;
-    public Tweet(User usuario, Long id, String content, String source, Boolean isRetweet) {
-        this.usuario = usuario;
+    private HashTableCerradoImpl<Long, HashTag> listHastag = new HashTableCerradoImpl<>(3);
+    public Tweet(Long id, String content, String source, Boolean isRetweet) {
         this.id = id;
         this.content = content;
         this.source = source;
         this.isRetweet = isRetweet;
+    }
+    public void setUsuario(User usuario) {
+        this.usuario = usuario;
     }
     public User getUsuario() {
         return usuario;

@@ -7,7 +7,7 @@ public class User {
 
     private String name;
 
-    private HashTableCerradoImpl<Long, Tweet> listTweets;
+    private HashTableCerradoImpl<Long, Tweet> listTweets = new HashTableCerradoImpl<>(3);
     public User(Long id, String name) {
         this.id = id;
         this.name = name;

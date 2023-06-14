@@ -29,4 +29,7 @@ bin/
 ### Mac OS ###
 .DS_Store
 /TADS_Java/
+/drivers.txt
+/f1_dataset.csv
+/f1_dataset_test.csv
 /f1_dataset_test.csv
