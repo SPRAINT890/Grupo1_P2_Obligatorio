@@ -4,7 +4,10 @@ import Entities.User;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import uy.edu.um.prog2.adt.MyHash.HashTableCerradoImpl;
+import uy.edu.um.prog2.adt.MyHeap.HeapImpl;
+import uy.edu.um.prog2.adt.Nodos.NodeHash;
 
+import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -14,11 +17,50 @@ import java.util.Scanner;
 public class main {
     static Long idUser = Long.valueOf(0);
     static Long idHastag = Long.valueOf(0);
-    static HashTableCerradoImpl<String, User> usuariosRegistrados = new HashTableCerradoImpl<>(3000);
-    static HashTableCerradoImpl<String, HashTag> hastagRegistrados = new HashTableCerradoImpl<>(3000);
-    static HashTableCerradoImpl<Long, Tweet> tweetsRegistrados = new HashTableCerradoImpl<>(3000);
-    public static void top_drivers(){
+    static HashTableCerradoImpl<String, User> usuariosRegistrados = new HashTableCerradoImpl<>(1000000);
+    static HashTableCerradoImpl<String, HashTag> hastagRegistrados = new HashTableCerradoImpl<>(1000000);
+    static HashTableCerradoImpl<Long, Tweet> tweetsRegistrados = new HashTableCerradoImpl<>(1000000);
+    public static void topDriversOf(int mes, int año) throws IOException, InterruptedException {
+        NodeHash<Long, Tweet>[] listTweets = tweetsRegistrados.getList();
+        HashTableCerradoImpl<String, Integer> pilotos = new HashTableCerradoImpl<>(30);
 
+        String fileName = "drivers.txt"; // Ruta del archivo
+        try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                pilotos.insert(line, 0);
+            }
+        } catch (IOException e) {
+            System.out.println("Error al leer el archivo: " + e.getMessage());
+        }
+
+        for (NodeHash<Long, Tweet> tweet : listTweets){
+            if (tweet == null){
+                continue;
+            }
+            if (tweet.getValue().getYear() != año || tweet.getValue().getMes() != mes){
+                continue;
+            }
+            for (NodeHash<String, Integer> piloto : pilotos.getList()){
+                if (piloto == null){
+                    continue;
+                }
+                if (tweet.getValue().getContent().contains(piloto.getKey())){
+                    piloto.setValue(piloto.getValue() + 1);
+                }
+            }
+        }
+        HeapImpl<Integer, String> pilotosOrdenados = new HeapImpl<>(30);
+        for (NodeHash<String, Integer> piloto : pilotos.getList()){
+            if (piloto == null){
+                continue;
+            }
+            pilotosOrdenados.insert(piloto.getValue(), piloto.getKey());
+        }
+        for (int i=0; i<10; i++){
+            System.out.println("Cantidad de veces: " + pilotosOrdenados.getList()[0].getKey() + "  Piloto: " + pilotosOrdenados.extractMax());
+        }
+        Thread.sleep(4000);
     }
 
     public static void top_users_tweets(){
@@ -42,7 +84,7 @@ public class main {
 
     public static void load_csv(){
         try {
-            Reader in = new FileReader("f1_dataset_test.csv");
+            Reader in = new FileReader("f1_dataset.csv");
             Iterable<CSVRecord> records = CSVFormat.EXCEL.withFirstRecordAsHeader().parse(in);
             for (CSVRecord record : records) {
                 String id = record.get("");
@@ -60,39 +102,43 @@ public class main {
                 String source = record.get("source");
                 String is_retweet = record.get("is_retweet");
 
-                //cargo el tweet sin usuario ni hashtag
-                Tweet newTweet = new Tweet(Long.valueOf(id), text, source, Boolean.valueOf(is_retweet));
-                tweetsRegistrados.insert(Long.valueOf(id), newTweet);
+                try {
+                    //cargo el tweet sin usuario ni hashtag
+                    Tweet newTweet = new Tweet(Long.valueOf(id), text, source, Boolean.valueOf(is_retweet), Integer.valueOf(date.substring(0, 4)), Integer.valueOf(date.substring(5, 7)), Integer.valueOf(date.substring(8, 10)));
+                    tweetsRegistrados.insert(Long.valueOf(id), newTweet);
 
-                //verifico si el usuario existe y le agrego el tweet
-                User newUser = new User(idUser, user_name);
-                User isFoundUser = usuariosRegistrados.search(user_name);
-                if (isFoundUser == null){
-                    newUser.getListTweets().insert(Long.valueOf(id), newTweet);
-                    usuariosRegistrados.insert(user_name, newUser);
-                    idUser++;
-                    newTweet.setUsuario(newUser);
-                }else {
-                    isFoundUser.getListTweets().insert(Long.valueOf(id), newTweet);
-                    newTweet.setUsuario(isFoundUser);
-                }
+                    //verifico si el usuario existe y le agrego el tweet
+                    User newUser = new User(idUser, user_name);
+                    User isFoundUser = usuariosRegistrados.search(user_name);
+                    if (isFoundUser == null){
+                        newUser.getListTweets().insert(Long.valueOf(id), newTweet);
+                        usuariosRegistrados.insert(user_name, newUser);
+                        idUser++;
+                        newTweet.setUsuario(newUser);
+                    }else {
+                        isFoundUser.getListTweets().insert(Long.valueOf(id), newTweet);
+                        newTweet.setUsuario(isFoundUser);
+                    }
 
-                //verifico si el hashtag existe
-                if (hashtags.contains("[")){
-                    String[] hastagConverted = hashtags.substring(2, hashtags.length() - 2).split("', '");
-                    for (int i = 0; i<hastagConverted.length; i++){
-                        HashTag isFoundHashtag = hastagRegistrados.search(hastagConverted[i]);
-                        if (isFoundHashtag != null){
-                            newTweet.getListHastag().insert(isFoundHashtag.getId(), isFoundHashtag);
-                            isFoundHashtag.getListTweetUsed().insert(newTweet.getId(), newTweet);
-                        }else{
-                            HashTag newHashtag = new HashTag(idHastag, hastagConverted[i]);
-                            idHastag++;
-                            newTweet.getListHastag().insert(newHashtag.getId(), newHashtag);
-                            newHashtag.getListTweetUsed().insert(newTweet.getId(), newTweet);
-                            hastagRegistrados.insert(newHashtag.getText(), newHashtag);
+                    //verifico si el hashtag existe
+                    if (hashtags.contains("[")){
+                        String[] hastagConverted = hashtags.substring(2, hashtags.length() - 2).split("', '");
+                        for (int i = 0; i<hastagConverted.length; i++){
+                            HashTag isFoundHashtag = hastagRegistrados.search(hastagConverted[i]);
+                            if (isFoundHashtag != null){
+                                newTweet.getListHastag().insert(isFoundHashtag.getId(), isFoundHashtag);
+                                isFoundHashtag.getListTweetUsed().insert(newTweet.getId(), newTweet);
+                            }else{
+                                HashTag newHashtag = new HashTag(idHastag, hastagConverted[i]);
+                                idHastag++;
+                                newTweet.getListHastag().insert(newHashtag.getId(), newHashtag);
+                                newHashtag.getListTweetUsed().insert(newTweet.getId(), newTweet);
+                                hastagRegistrados.insert(newHashtag.getText(), newHashtag);
+                            }
                         }
                     }
+                }catch (NumberFormatException el){
+                    continue;
                 }
 
             }
@@ -110,7 +156,7 @@ public class main {
         }
     }
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, IOException {
         Scanner entrada = new Scanner(System.in);
         load_csv();
         int valor = 1;
@@ -134,7 +180,11 @@ public class main {
 
             if (valor == 1){
                 clear_console();
-                System.out.println("1");
+                System.out.println("Ingrese el MES en formato MM");
+                int mes = entrada.nextInt();
+                System.out.println("Ingrese el AÑO en formato YYYY");
+                int año = entrada.nextInt();
+                topDriversOf(mes, año);
             }
             if (valor == 2){
                 clear_console();
