@@ -1,3 +1,4 @@
+import Entities.Driver;
 import Entities.HashTag;
 import Entities.Tweet;
 import Entities.User;
@@ -17,56 +18,54 @@ import java.util.Scanner;
 public class main {
     static Long idUser = Long.valueOf(0);
     static Long idHastag = Long.valueOf(0);
-    static HashTableCerradoImpl<String, User> usuariosRegistrados = new HashTableCerradoImpl<>(1000000);
-    static HashTableCerradoImpl<String, HashTag> hastagRegistrados = new HashTableCerradoImpl<>(1000000);
-    static HashTableCerradoImpl<Long, Tweet> tweetsRegistrados = new HashTableCerradoImpl<>(1000000);
-    public static void topDriversOf(int mes, int año) throws IOException, InterruptedException {
-        NodeHash<Long, Tweet>[] listTweets = tweetsRegistrados.getList();
-        HashTableCerradoImpl<String, Integer> pilotos = new HashTableCerradoImpl<>(30);
-
-        String fileName = "drivers.txt"; // Ruta del archivo
-        try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                pilotos.insert(line, 0);
-            }
-        } catch (IOException e) {
-            System.out.println("Error al leer el archivo: " + e.getMessage());
-        }
-
-        for (NodeHash<Long, Tweet> tweet : listTweets){
+    static Driver[] pilotosActivos = new Driver[20];
+    static HashTableCerradoImpl<String, User> usuariosRegistrados = new HashTableCerradoImpl<>(1000);
+    static HashTableCerradoImpl<String, HashTag> hastagRegistrados = new HashTableCerradoImpl<>(1000);
+    static HashTableCerradoImpl<Long, Tweet> tweetsRegistrados = new HashTableCerradoImpl<>(1000);
+    public static void tenDriversOf(int mes, int año) throws IOException, InterruptedException {
+        loadDrivers();
+        //recorro la lista de tweets registrados
+        for (NodeHash<Long, Tweet> tweet : tweetsRegistrados.getList()){
             if (tweet == null){
                 continue;
             }
             if (tweet.getValue().getYear() != año || tweet.getValue().getMes() != mes){
                 continue;
             }
-            for (NodeHash<String, Integer> piloto : pilotos.getList()){
-                if (piloto == null){
-                    continue;
-                }
-                if (tweet.getValue().getContent().contains(piloto.getKey())){
-                    piloto.setValue(piloto.getValue() + 1);
+            //si es un tweet valido, compruebo que piloto es mencionado
+            for (Driver piloto : pilotosActivos){
+                //si el tweet contiene el piloto le sumo 1 al contador
+                if (tweet.getValue().getContent().toLowerCase().contains(piloto.getName().toLowerCase()) || tweet.getValue().getContent().toLowerCase().contains(piloto.getLastName().toLowerCase())){
+                    piloto.setMenciones(piloto.getMenciones() + 1);
                 }
             }
         }
+        //ordeno los pilotos por un heap
         HeapImpl<Integer, String> pilotosOrdenados = new HeapImpl<>(30);
-        for (NodeHash<String, Integer> piloto : pilotos.getList()){
-            if (piloto == null){
-                continue;
-            }
-            pilotosOrdenados.insert(piloto.getValue(), piloto.getKey());
+        for (Driver piloto : pilotosActivos){
+            pilotosOrdenados.insert( piloto.getMenciones(), piloto.getName() + " " + piloto.getLastName());
         }
-        for (int i=0; i<10; i++){
-            System.out.println("Cantidad de veces: " + pilotosOrdenados.getList()[0].getKey() + "  Piloto: " + pilotosOrdenados.extractMax());
+        //imprimo los primeros 10
+        for (int i=1; i<=10; i++){
+            System.out.println("Nº " + i + " cantidad de veces: " + pilotosOrdenados.getList()[0].getKey() + "  Piloto: " + pilotosOrdenados.extractMax());
         }
         Thread.sleep(4000);
     }
 
-    public static void top_users_tweets(){
-
+    public static void fiftenUsersWithMoreTweets() throws InterruptedException {
+        HeapImpl<Integer, User> ranking = new HeapImpl<>(usuariosRegistrados.getSize());
+        for (NodeHash<String, User> usuario : usuariosRegistrados.getList()){
+            if (usuario == null){
+                continue;
+            }
+            ranking.insert(usuario.getValue().getListTweets().getSize(), usuario.getValue());
+        }
+        for (int c = 1; c<=15; c++){
+            System.out.println("Nº " + c + " Cantidad de tweets: "  + ranking.getList()[0].getKey() + "  Verificado: " + ranking.getList()[0].getValue().isVerified() + " Usuario:" + ranking.extractMax().getName());
+        }
+        Thread.sleep(4000);
     }
-    public static void amount_hastagh_on_a_day(){
+    public static void amountOfDifferentsHastaghOnADay(){
 
     }
     public static void top_fav_accounts(){
@@ -81,10 +80,26 @@ public class main {
             System.out.println("");
         }
     }
+    public static void loadDrivers(){
+        //cargo los pilotos
+        String fileName = "drivers.txt"; // Ruta del archivo drivers
+        try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
+            String line;
+            int c = 0;
+            while ((line = br.readLine()) != null) {
+                String[] nombre = line.split(" ", 2);
+                Driver newPiloto = new Driver(nombre[0], nombre[1]);
+                pilotosActivos[c] = newPiloto;
+                c++;
+            }
+        } catch (IOException e) {
+            System.out.println("Error al leer el archivo: " + e.getMessage());
+        }
+    }
 
     public static void load_csv(){
         try {
-            Reader in = new FileReader("f1_dataset.csv");
+            Reader in = new FileReader("f1_dataset_test.csv");
             Iterable<CSVRecord> records = CSVFormat.EXCEL.withFirstRecordAsHeader().parse(in);
             for (CSVRecord record : records) {
                 String id = record.get("");
@@ -108,7 +123,7 @@ public class main {
                     tweetsRegistrados.insert(Long.valueOf(id), newTweet);
 
                     //verifico si el usuario existe y le agrego el tweet
-                    User newUser = new User(idUser, user_name);
+                    User newUser = new User(idUser, user_name, Boolean.valueOf(user_verified));
                     User isFoundUser = usuariosRegistrados.search(user_name);
                     if (isFoundUser == null){
                         newUser.getListTweets().insert(Long.valueOf(id), newTweet);
@@ -146,18 +161,9 @@ public class main {
             e.printStackTrace();
         }
     }
-    public static void loadHashtag(String hashtags){
-        String[] hastagConverted = hashtags.substring(2, hashtags.length() - 2).split("', '");
-        for (int i = 0; i<hastagConverted.length; i++){
-            HashTag isFound = hastagRegistrados.search(hastagConverted[i]);
-            if (isFound != null){
-
-            }
-        }
-    }
-
     public static void main(String[] args) throws InterruptedException, IOException {
         Scanner entrada = new Scanner(System.in);
+        loadDrivers();
         load_csv();
         int valor = 1;
         while (valor != 0){
@@ -184,11 +190,11 @@ public class main {
                 int mes = entrada.nextInt();
                 System.out.println("Ingrese el AÑO en formato YYYY");
                 int año = entrada.nextInt();
-                topDriversOf(mes, año);
+                tenDriversOf(mes, año);
             }
             if (valor == 2){
                 clear_console();
-                System.out.println("2");
+                fiftenUsersWithMoreTweets();
             }
             if (valor == 3){
                 clear_console();
