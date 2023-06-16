@@ -9,7 +9,7 @@ public class Tweet {
     private String source;
     private Boolean isRetweet;
     private Integer year;
-    private Integer mes;
+    private Integer month;
     private Integer day;
     private HashTableCerradoImpl<Long, HashTag> listHastag = new HashTableCerradoImpl<>(3);
     public Tweet(Long id, String content, String source, Boolean isRetweet, Integer year, Integer month, Integer day) {
@@ -18,7 +18,7 @@ public class Tweet {
         this.source = source;
         this.isRetweet = isRetweet;
         this.year = year;
-        this.mes = month;
+        this.month = month;
         this.day = day;
     }
     public void setUsuario(User usuario) {
@@ -48,8 +48,8 @@ public class Tweet {
         return year;
     }
 
-    public Integer getMes() {
-        return mes;
+    public Integer getMonth() {
+        return month;
     }
 
     public Integer getDay() {

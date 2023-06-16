@@ -13,8 +13,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Scanner;
-
-
 public class main {
     static Long idUser = Long.valueOf(0);
     static Long idHastag = Long.valueOf(0);
@@ -29,7 +27,7 @@ public class main {
             if (tweet == null){
                 continue;
             }
-            if (tweet.getValue().getYear() != año || tweet.getValue().getMes() != mes){
+            if (tweet.getValue().getYear() != año || tweet.getValue().getMonth() != mes){
                 continue;
             }
             //si es un tweet valido, compruebo que piloto es mencionado
@@ -49,7 +47,6 @@ public class main {
         for (int i=1; i<=10; i++){
             System.out.println("Nº " + i + " cantidad de veces: " + pilotosOrdenados.getList()[0].getKey() + "  Piloto: " + pilotosOrdenados.extractMax());
         }
-        Thread.sleep(4000);
     }
 
     public static void fiftenUsersWithMoreTweets() throws InterruptedException {
@@ -63,10 +60,30 @@ public class main {
         for (int c = 1; c<=15; c++){
             System.out.println("Nº " + c + " Cantidad de tweets: "  + ranking.getList()[0].getKey() + "  Verificado: " + ranking.getList()[0].getValue().isVerified() + " Usuario:" + ranking.extractMax().getName());
         }
-        Thread.sleep(4000);
     }
-    public static void amountOfDifferentsHastaghOnADay(){
-
+    public static void amountOfDifferentsHastaghOnADay(String date){
+        String[] dateSplit = date.split("-");
+        Integer yearSel = Integer.parseInt(dateSplit[0]);
+        Integer monthSel = Integer.parseInt(dateSplit[1]);
+        Integer daySel = Integer.parseInt(dateSplit[2]);
+        HashTableCerradoImpl<Long, HashTag> hashEncontrados = new HashTableCerradoImpl<>(100);
+        for (NodeHash<Long, Tweet> tweet : tweetsRegistrados.getList()){
+            if (tweet == null){
+                continue;
+            }
+            if (tweet.getValue().getDay() == daySel && tweet.getValue().getMonth() == monthSel && tweet.getValue().getYear() == yearSel){
+                for (NodeHash<Long, HashTag> hashTag : tweet.getValue().getListHastag().getList()){
+                    if (hashTag == null){
+                        continue;
+                    }
+                    if (hashEncontrados.search(hashTag.getValue().getId()) == null){
+                        continue;
+                    }
+                    hashEncontrados.insert(hashTag.getValue().getId(), hashTag.getValue());
+                }
+            }
+        }
+        System.out.println("Para la fecha " + date + " se encontro: " + hashEncontrados.getSize());
     }
     public static void top_fav_accounts(){
 
@@ -82,6 +99,7 @@ public class main {
     }
     public static void loadDrivers(){
         //cargo los pilotos
+        System.out.println("Cargando los pilotos...");
         String fileName = "drivers.txt"; // Ruta del archivo drivers
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
             String line;
@@ -98,6 +116,7 @@ public class main {
     }
 
     public static void load_csv(){
+        System.out.println("Cargando los tweets...");
         try {
             Reader in = new FileReader("f1_dataset_test.csv");
             Iterable<CSVRecord> records = CSVFormat.EXCEL.withFirstRecordAsHeader().parse(in);
@@ -163,8 +182,17 @@ public class main {
     }
     public static void main(String[] args) throws InterruptedException, IOException {
         Scanner entrada = new Scanner(System.in);
+        long tempInicio = System.currentTimeMillis();
         loadDrivers();
+        System.out.println((double) ((System.currentTimeMillis() - tempInicio)/1000) +" segundos");
+        clear_console();
+
+        tempInicio = System.currentTimeMillis();
         load_csv();
+        System.out.println((double) ((System.currentTimeMillis() - tempInicio)/1000) +" segundos");
+
+
+        clear_console();
         int valor = 1;
         while (valor != 0){
             clear_console();
@@ -190,27 +218,47 @@ public class main {
                 int mes = entrada.nextInt();
                 System.out.println("Ingrese el AÑO en formato YYYY");
                 int año = entrada.nextInt();
+                tempInicio = System.currentTimeMillis();
                 tenDriversOf(mes, año);
+                System.out.println((double) ((System.currentTimeMillis() - tempInicio)/1000) +" segundos");
+                Thread.sleep(4000);
             }
             if (valor == 2){
                 clear_console();
+                tempInicio = System.currentTimeMillis();
                 fiftenUsersWithMoreTweets();
+                System.out.println((double) ((System.currentTimeMillis() - tempInicio)/1000) +" segundos");
+                Thread.sleep(4000);
             }
             if (valor == 3){
                 clear_console();
-                System.out.println("3");
+                System.out.println("Ingrese la fecha en formato YYYY-MM-DD");
+                String date = entrada.next();
+                tempInicio = System.currentTimeMillis();
+                amountOfDifferentsHastaghOnADay(date);
+                System.out.println((double) ((System.currentTimeMillis() - tempInicio)/1000) +" segundos");
+                Thread.sleep(4000);
             }
             if (valor == 4){
                 clear_console();
+                tempInicio = System.currentTimeMillis();
                 System.out.println("4");
+                System.out.println((double) ((System.currentTimeMillis() - tempInicio)/1000) +" segundos");
+                Thread.sleep(4000);
             }
             if (valor == 5){
                 clear_console();
+                tempInicio = System.currentTimeMillis();
                 System.out.println("5");
+                System.out.println((double) ((System.currentTimeMillis() - tempInicio)/1000) +" segundos");
+                Thread.sleep(4000);
             }
             if (valor == 6){
                 clear_console();
+                tempInicio = System.currentTimeMillis();
                 System.out.println("6");
+                System.out.println((double) ((System.currentTimeMillis() - tempInicio)/1000) +" segundos");
+                Thread.sleep(4000);
             }
         }
     }
