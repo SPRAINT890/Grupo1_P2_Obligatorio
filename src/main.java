@@ -14,9 +14,9 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.Scanner;
 public class main {
+    static final String CSV = "f1_dataset_test.csv";
     static Long idUser = Long.valueOf(0);
     static Long idHastag = Long.valueOf(0);
-    static final String CSV = "f1_dataset_test.csv";
     static Driver[] pilotosActivos = new Driver[20];
     static HashTableCerradoImpl<String, User> usuariosRegistrados = new HashTableCerradoImpl<>(1000);
     static HashTableCerradoImpl<String, HashTag> hastagRegistrados = new HashTableCerradoImpl<>(1000);
