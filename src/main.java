@@ -16,6 +16,7 @@ import java.util.Scanner;
 public class main {
     static Long idUser = Long.valueOf(0);
     static Long idHastag = Long.valueOf(0);
+    static final String CSV = "f1_dataset_test.csv";
     static Driver[] pilotosActivos = new Driver[20];
     static HashTableCerradoImpl<String, User> usuariosRegistrados = new HashTableCerradoImpl<>(1000);
     static HashTableCerradoImpl<String, HashTag> hastagRegistrados = new HashTableCerradoImpl<>(1000);
@@ -115,7 +116,7 @@ public class main {
     public static void load_csv(){
         System.out.println("Cargando los tweets...");
         try {
-            Reader in = new FileReader("f1_dataset_test.csv");
+            Reader in = new FileReader(CSV);
             Iterable<CSVRecord> records = CSVFormat.EXCEL.withFirstRecordAsHeader().parse(in);
             for (CSVRecord record : records) {
                 String id = record.get("");
