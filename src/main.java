@@ -24,10 +24,7 @@ public class main {
         loadDrivers();
         //recorro la lista de tweets registrados
         for (NodeHash<Long, Tweet> tweet : tweetsRegistrados.getList()){
-            if (tweet == null){
-                continue;
-            }
-            if (tweet.getValue().getYear() != año || tweet.getValue().getMonth() != mes){
+            if (tweet == null || tweet.getValue().getYear() != año || tweet.getValue().getMonth() != mes){
                 continue;
             }
             //si es un tweet valido, compruebo que piloto es mencionado
@@ -71,12 +68,12 @@ public class main {
             if (tweet == null){
                 continue;
             }
-            if (tweet.getValue().getDay() == daySel && tweet.getValue().getMonth() == monthSel && tweet.getValue().getYear() == yearSel){
+            if (tweet.getValue().getDay().equals(daySel) && tweet.getValue().getMonth().equals(monthSel) && tweet.getValue().getYear().equals(yearSel)){
                 for (NodeHash<Long, HashTag> hashTag : tweet.getValue().getListHastag().getList()){
                     if (hashTag == null){
                         continue;
                     }
-                    if (hashEncontrados.search(hashTag.getValue().getId()) == null){
+                    if (hashEncontrados.search(hashTag.getValue().getId()) != null){
                         continue;
                     }
                     hashEncontrados.insert(hashTag.getValue().getId(), hashTag.getValue());
