@@ -1,6 +1,7 @@
 import Entities.Driver;
 import Entities.HashTag;
 import Entities.Tweet;
+import Entities.User;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import uy.edu.um.prog2.adt.MyHash.HashTableCerradoImpl;
