@@ -1,7 +1,6 @@
 import Entities.Driver;
 import Entities.HashTag;
 import Entities.Tweet;
-import Entities.User;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import uy.edu.um.prog2.adt.MyHash.HashTableCerradoImpl;
@@ -46,7 +45,6 @@ public class main {
             System.out.println("Nº " + i + " cantidad de veces: " + pilotosOrdenados.getList()[0].getKey() + "  Piloto: " + pilotosOrdenados.extractMax());
         }
     }
-
     public static void fiftenUsersWithMoreTweets() throws InterruptedException {
         HeapImpl<Integer, User> ranking = new HeapImpl<>(usuariosRegistrados.getSize());
         for (NodeHash<String, User> usuario : usuariosRegistrados.getList()){
@@ -83,7 +81,7 @@ public class main {
         }
         System.out.println("Para la fecha " + date + " se encontro: " + hashEncontrados.getSize());
     }
-    public static void topFavAccounts(String date){
+    public static void mostHashtagsUsedOnADay(String date){
         String[] dateSplit = date.split("-");
         Integer yearSel = Integer.parseInt(dateSplit[0]);
         Integer monthSel = Integer.parseInt(dateSplit[1]);
@@ -122,8 +120,17 @@ public class main {
         }
         System.out.println("Hashtag mas usado el dia " + date + " es " + maxName + " Cantidad: " + maxCantidad);
     }
-    public static void amount_tweets_with(){
-
+    public static void sevenMostLikedUsers(){
+        HeapImpl<Integer, User> ranking = new HeapImpl<>(usuariosRegistrados.getSize());
+        for (NodeHash<String, User> usuario : usuariosRegistrados.getList()){
+            if (usuario == null){
+                continue;
+            }
+            ranking.insert(usuario.getValue().getLike(), usuario.getValue());
+        }
+        for (int i = 1; i<8; i++){
+            System.out.println("Nº " + i + " Nombre " + ranking.extractMax().getName() + " Cantidad de Likes " + ranking.getList()[0].getKey());
+        }
     }
 
     public static void clear_console(){
@@ -157,12 +164,12 @@ public class main {
             for (CSVRecord record : records) {
                 String id = record.get("");
                 String user_name = record.get("user_name");
-                /*String user_location = record.get("user_location");
+                String user_location = record.get("user_location");
                 String user_description = record.get("user_description");
                 String user_created = record.get("user_created");
                 String user_followers = record.get("user_followers");
                 String user_friends = record.get("user_friends");
-                String user_favourites = record.get("user_favourites");*/
+                String user_favourites = record.get("user_favourites");
                 String user_verified = record.get("user_verified");
                 String date = record.get("date");
                 String text = record.get("text");
@@ -176,7 +183,7 @@ public class main {
                     tweetsRegistrados.insert(Long.valueOf(id), newTweet);
 
                     //verifico si el usuario existe y le agrego el tweet
-                    User newUser = new User(idUser, user_name, Boolean.valueOf(user_verified));
+                    User newUser = new User(idUser, user_name, Boolean.valueOf(user_verified), Integer.valueOf(user_favourites));
                     User isFoundUser = usuariosRegistrados.search(user_name);
                     if (isFoundUser == null){
                         newUser.getListTweets().insert(Long.valueOf(id), newTweet);
@@ -185,6 +192,7 @@ public class main {
                         newTweet.setUsuario(newUser);
                     }else {
                         isFoundUser.getListTweets().insert(Long.valueOf(id), newTweet);
+                        isFoundUser.setLike(isFoundUser.getLike() + Integer.valueOf(user_favourites));
                         newTweet.setUsuario(isFoundUser);
                     }
 
@@ -280,14 +288,14 @@ public class main {
                 System.out.println("Ingrese la fecha en formato YYYY-MM-DD");
                 String date = entrada.next();
                 tempInicio = System.currentTimeMillis();
-                topFavAccounts(date);
+                mostHashtagsUsedOnADay(date);
                 System.out.println((double) ((System.currentTimeMillis() - tempInicio)/1000) +" segundos");
                 Thread.sleep(4000);
             }
             if (valor == 5){
                 clear_console();
                 tempInicio = System.currentTimeMillis();
-                System.out.println("5");
+                sevenMostLikedUsers();
                 System.out.println((double) ((System.currentTimeMillis() - tempInicio)/1000) +" segundos");
                 Thread.sleep(4000);
             }
