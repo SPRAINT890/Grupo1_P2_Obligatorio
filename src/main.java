@@ -1,6 +1,7 @@
 import Entities.Driver;
 import Entities.HashTag;
 import Entities.Tweet;
+import Entities.User;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import uy.edu.um.prog2.adt.MyHash.HashTableCerradoImpl;
@@ -132,7 +133,18 @@ public class main {
             System.out.println("Nº " + i + " Nombre " + ranking.extractMax().getName() + " Cantidad de Likes " + ranking.getList()[0].getKey());
         }
     }
-
+    public static void cantidadDeTweetsConUnaFrase(String frase){
+        Long contador = 0L;
+        for (NodeHash<Long, Tweet> tweet : tweetsRegistrados.getList()){
+            if (tweet == null){
+                continue;
+            }
+            if (tweet.getValue().getContent().toLowerCase().contains(frase)){
+                contador++;
+            }
+        }
+        System.out.println(contador);
+    }
     public static void clear_console(){
         for (int i = 0; i<50; i++){
             System.out.println("");
@@ -164,11 +176,6 @@ public class main {
             for (CSVRecord record : records) {
                 String id = record.get("");
                 String user_name = record.get("user_name");
-                String user_location = record.get("user_location");
-                String user_description = record.get("user_description");
-                String user_created = record.get("user_created");
-                String user_followers = record.get("user_followers");
-                String user_friends = record.get("user_friends");
                 String user_favourites = record.get("user_favourites");
                 String user_verified = record.get("user_verified");
                 String date = record.get("date");
@@ -301,8 +308,10 @@ public class main {
             }
             if (valor == 6){
                 clear_console();
+                System.out.println("Ingrese la frase que desea buscar");
+                String frase = entrada.next();
                 tempInicio = System.currentTimeMillis();
-                System.out.println("6");
+                cantidadDeTweetsConUnaFrase(frase.toLowerCase());
                 System.out.println((double) ((System.currentTimeMillis() - tempInicio)/1000) +" segundos");
                 Thread.sleep(4000);
             }
