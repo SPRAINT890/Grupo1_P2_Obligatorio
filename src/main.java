@@ -7,13 +7,14 @@ import org.apache.commons.csv.CSVRecord;
 import uy.edu.um.prog2.adt.MyHash.HashTableCerradoImpl;
 import uy.edu.um.prog2.adt.MyHeap.HeapImpl;
 import uy.edu.um.prog2.adt.Nodos.NodeHash;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Scanner;
 public class main {
-    static final String CSV = "f1_dataset.csv";
+    static final String CSV = "f1_dataset_test.csv";
     static Long idUser = Long.valueOf(0);
     static Long idHastag = Long.valueOf(0);
     static Driver[] pilotosActivos = new Driver[20];
@@ -82,8 +83,44 @@ public class main {
         }
         System.out.println("Para la fecha " + date + " se encontro: " + hashEncontrados.getSize());
     }
-    public static void top_fav_accounts(){
+    public static void topFavAccounts(String date){
+        String[] dateSplit = date.split("-");
+        Integer yearSel = Integer.parseInt(dateSplit[0]);
+        Integer monthSel = Integer.parseInt(dateSplit[1]);
+        Integer daySel = Integer.parseInt(dateSplit[2]);
 
+        HashTableCerradoImpl<String, Integer> hashEncontrados = new HashTableCerradoImpl<>(100);
+
+        for (NodeHash<Long, Tweet> tweet : tweetsRegistrados.getList()){
+            if (tweet == null || tweet.getValue().getYear() != yearSel && tweet.getValue().getMonth() != monthSel && tweet.getValue().getDay() != daySel){
+                continue;
+            }
+            for (NodeHash<Long, HashTag> hashTag : tweet.getValue().getListHastag().getList()){
+                if (hashTag == null || hashTag.getValue().getText().toLowerCase().contains("f1")){
+                    continue;
+                }
+
+                Integer isFound = hashEncontrados.search(hashTag.getValue().getText());
+                if (isFound != null){
+                    hashEncontrados.setValue(hashTag.getValue().getText(), isFound+1);
+                }else {
+                    hashEncontrados.insert(hashTag.getValue().getText(), 1);
+                }
+
+            }
+        }
+
+        Integer maxCantidad = 0;
+        String maxName = "";
+
+        for (NodeHash<String, Integer> hashtags : hashEncontrados.getList()){
+            if (hashtags == null || hashtags.getValue() < maxCantidad){
+                continue;
+            }
+            maxCantidad = hashtags.getValue();
+            maxName = hashtags.getKey();
+        }
+        System.out.println("Hashtag mas usado el dia " + date + " es " + maxName + " Cantidad: " + maxCantidad);
     }
     public static void amount_tweets_with(){
 
@@ -240,8 +277,10 @@ public class main {
             }
             if (valor == 4){
                 clear_console();
+                System.out.println("Ingrese la fecha en formato YYYY-MM-DD");
+                String date = entrada.next();
                 tempInicio = System.currentTimeMillis();
-                System.out.println("4");
+                topFavAccounts(date);
                 System.out.println((double) ((System.currentTimeMillis() - tempInicio)/1000) +" segundos");
                 Thread.sleep(4000);
             }
