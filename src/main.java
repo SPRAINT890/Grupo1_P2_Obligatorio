@@ -7,14 +7,13 @@ import org.apache.commons.csv.CSVRecord;
 import uy.edu.um.prog2.adt.MyHash.HashTableCerradoImpl;
 import uy.edu.um.prog2.adt.MyHeap.HeapImpl;
 import uy.edu.um.prog2.adt.Nodos.NodeHash;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Scanner;
 public class main {
-    static final String CSV = "f1_dataset_test.csv";
+    static final String CSV = "f1_dataset.csv";
     static Long idUser = Long.valueOf(0);
     static Long idHastag = Long.valueOf(0);
     static Driver[] pilotosActivos = new Driver[20];
@@ -121,12 +120,12 @@ public class main {
             for (CSVRecord record : records) {
                 String id = record.get("");
                 String user_name = record.get("user_name");
-                String user_location = record.get("user_location");
+                /*String user_location = record.get("user_location");
                 String user_description = record.get("user_description");
                 String user_created = record.get("user_created");
                 String user_followers = record.get("user_followers");
                 String user_friends = record.get("user_friends");
-                String user_favourites = record.get("user_favourites");
+                String user_favourites = record.get("user_favourites");*/
                 String user_verified = record.get("user_verified");
                 String date = record.get("date");
                 String text = record.get("text");
@@ -180,9 +179,11 @@ public class main {
     }
     public static void main(String[] args) throws InterruptedException, IOException {
         Scanner entrada = new Scanner(System.in);
+
         long tempInicio = System.currentTimeMillis();
         loadDrivers();
         System.out.println((double) ((System.currentTimeMillis() - tempInicio)/1000) +" segundos");
+
         clear_console();
 
         tempInicio = System.currentTimeMillis();

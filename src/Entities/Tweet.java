@@ -11,7 +11,7 @@ public class Tweet {
     private Integer year;
     private Integer month;
     private Integer day;
-    private HashTableCerradoImpl<Long, HashTag> listHastag = new HashTableCerradoImpl<>(3);
+    private HashTableCerradoImpl<Long, HashTag> listHastag = new HashTableCerradoImpl<>(10);
     public Tweet(Long id, String content, String source, Boolean isRetweet, Integer year, Integer month, Integer day) {
         this.id = id;
         this.content = content;

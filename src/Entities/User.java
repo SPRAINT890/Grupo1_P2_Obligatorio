@@ -6,7 +6,7 @@ public class User {
     private Long id;
     private String name;
     private boolean verified;
-    private HashTableCerradoImpl<Long, Tweet> listTweets = new HashTableCerradoImpl<>(3);
+    private HashTableCerradoImpl<Long, Tweet> listTweets = new HashTableCerradoImpl<>(500);
     public User(Long id, String name, boolean verified) {
         this.id = id;
         this.name = name;
