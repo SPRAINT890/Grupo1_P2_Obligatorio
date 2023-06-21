@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.Scanner;
 public class main {
-    static final String CSV = "f1_dataset_test.csv";
+    static final String CSV = "f1_dataset.csv";
     static Long idUser = Long.valueOf(0);
     static Long idHastag = Long.valueOf(0);
     static Driver[] pilotosActivos = new Driver[20];
@@ -70,10 +70,7 @@ public class main {
             }
             if (tweet.getValue().getDay().equals(daySel) && tweet.getValue().getMonth().equals(monthSel) && tweet.getValue().getYear().equals(yearSel)){
                 for (NodeHash<Long, HashTag> hashTag : tweet.getValue().getListHastag().getList()){
-                    if (hashTag == null){
-                        continue;
-                    }
-                    if (hashEncontrados.search(hashTag.getValue().getId()) != null){
+                    if (hashTag == null || hashEncontrados.search(hashTag.getValue().getId()) != null){
                         continue;
                     }
                     hashEncontrados.insert(hashTag.getValue().getId(), hashTag.getValue());
@@ -167,7 +164,6 @@ public class main {
             System.out.println("Error al leer el archivo: " + e.getMessage());
         }
     }
-
     public static void load_csv(){
         System.out.println("Cargando los tweets...");
         try {
