@@ -178,14 +178,18 @@ public class main {
                 String hashtags = record.get("hashtags");
                 String source = record.get("source");
                 String is_retweet = record.get("is_retweet");
-
                 try {
                     //cargo el tweet sin usuario ni hashtag
                     Tweet newTweet = new Tweet(Long.valueOf(id), text, source, Boolean.valueOf(is_retweet), Integer.valueOf(date.substring(0, 4)), Integer.valueOf(date.substring(5, 7)), Integer.valueOf(date.substring(8, 10)));
                     tweetsRegistrados.insert(Long.valueOf(id), newTweet);
 
                     //verifico si el usuario existe y le agrego el tweet
-                    User newUser = new User(idUser, user_name, Boolean.valueOf(user_verified), Integer.valueOf(user_favourites));
+                    User newUser = new User(idUser, user_name, Boolean.valueOf(user_verified));
+                    if (user_favourites.contains(".")){
+                        newUser.setLike(Integer.parseInt(user_favourites.split("\\.")[0]));
+                    }else {
+                        newUser.setLike(Integer.valueOf(user_favourites));
+                    }
                     User isFoundUser = usuariosRegistrados.search(user_name);
                     if (isFoundUser == null){
                         newUser.getListTweets().insert(Long.valueOf(id), newTweet);

@@ -8,11 +8,10 @@ public class User {
     private boolean verified;
     private Integer like;
     private HashTableCerradoImpl<Long, Tweet> listTweets = new HashTableCerradoImpl<>(100);
-    public User(Long id, String name, boolean verified, Integer like) {
+    public User(Long id, String name, boolean verified) {
         this.id = id;
         this.name = name;
         this.verified = verified;
-        this.like = like;
     }
 
     public Long getId() {
