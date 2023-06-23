@@ -18,9 +18,8 @@ public class main {
     static Long idUser = Long.valueOf(0);
     static Long idHastag = Long.valueOf(0);
     static Driver[] pilotosActivos = new Driver[20];
-    static HashTableCerradoImpl<String, User> usuariosRegistrados = new HashTableCerradoImpl<>(1000);
-    static HashTableCerradoImpl<String, HashTag> hastagRegistrados = new HashTableCerradoImpl<>(1000);
-    static HashTableCerradoImpl<Long, Tweet> tweetsRegistrados = new HashTableCerradoImpl<>(1000);
+    static HashTableCerradoImpl<String, User> usuariosRegistrados = new HashTableCerradoImpl<>(10000);
+    static HashTableCerradoImpl<Long, Tweet> tweetsRegistrados = new HashTableCerradoImpl<>(10000);
     public static void tenDriversOf(int mes, int año) throws IOException, InterruptedException {
         loadDrivers();
         //recorro la lista de tweets registrados
@@ -102,7 +101,6 @@ public class main {
                 }else {
                     hashEncontrados.insert(hashTag.getValue().getText(), 1);
                 }
-
             }
         }
 
@@ -166,6 +164,7 @@ public class main {
     }
     public static void load_csv(){
         System.out.println("Cargando los tweets...");
+        HashTableCerradoImpl<String, HashTag> hastagRegistrados = new HashTableCerradoImpl<>(1000);
         try {
             Reader in = new FileReader(CSV);
             Iterable<CSVRecord> records = CSVFormat.EXCEL.withFirstRecordAsHeader().parse(in);
@@ -206,12 +205,10 @@ public class main {
                             HashTag isFoundHashtag = hastagRegistrados.search(hastagConverted[i]);
                             if (isFoundHashtag != null){
                                 newTweet.getListHastag().insert(isFoundHashtag.getId(), isFoundHashtag);
-                                isFoundHashtag.getListTweetUsed().insert(newTweet.getId(), newTweet);
                             }else{
                                 HashTag newHashtag = new HashTag(idHastag, hastagConverted[i]);
                                 idHastag++;
                                 newTweet.getListHastag().insert(newHashtag.getId(), newHashtag);
-                                newHashtag.getListTweetUsed().insert(newTweet.getId(), newTweet);
                                 hastagRegistrados.insert(newHashtag.getText(), newHashtag);
                             }
                         }
@@ -231,13 +228,11 @@ public class main {
         long tempInicio = System.currentTimeMillis();
         loadDrivers();
         System.out.println((double) ((System.currentTimeMillis() - tempInicio)/1000) +" segundos");
-
         clear_console();
 
         tempInicio = System.currentTimeMillis();
         load_csv();
         System.out.println((double) ((System.currentTimeMillis() - tempInicio)/1000) +" segundos");
-
 
         clear_console();
         int valor = 1;
@@ -258,7 +253,6 @@ public class main {
                 Thread.sleep(4000);
                 continue;
             }
-
             if (valor == 1){
                 clear_console();
                 System.out.println("Ingrese el MES en formato MM");
