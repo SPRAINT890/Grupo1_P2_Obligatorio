@@ -6,6 +6,7 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import uy.edu.um.prog2.adt.MyHash.HashTableCerradoImpl;
 import uy.edu.um.prog2.adt.MyHeap.HeapImpl;
+import uy.edu.um.prog2.adt.MyMergeSort.MergeSortImpl;
 import uy.edu.um.prog2.adt.Nodos.NodeHash;
 
 import java.io.BufferedReader;
@@ -46,15 +47,27 @@ public class main {
         }
     }
     public static void fiftenUsersWithMoreTweets() throws InterruptedException {
-        HeapImpl<Integer, User> ranking = new HeapImpl<>(usuariosRegistrados.getSize());
+        User[] ranking = new User[15];
+        MergeSortImpl<User> sort = new MergeSortImpl<User>();
+        int c = 0;
         for (NodeHash<String, User> usuario : usuariosRegistrados.getList()){
             if (usuario == null){
                 continue;
             }
-            ranking.insert(usuario.getValue().getListTweets().getSize(), usuario.getValue());
+            if (c<15){
+                ranking[c] = usuario.getValue();
+                c++;
+                continue;
+            }
+            sort.mergesort(ranking);
+            if (ranking[0].compareTo(usuario.getValue()) < 0){
+                ranking[0] = usuario.getValue();
+            }
         }
-        for (int c = 1; c<=15; c++){
-            System.out.println("Nº " + c + " Cantidad de tweets: "  + ranking.getList()[0].getKey() + "  Verificado: " + ranking.getList()[0].getValue().isVerified() + " Usuario:" + ranking.extractMax().getName());
+        int i = 1;
+        for (c-- ; c>0; c--){
+            System.out.println("Nº " + i + " Cantidad de Tweets: " + ranking[c].getListTweets().getSize() + " Verificado: " + ranking[c].isVerified() + " Usuario: " + ranking[c].getName());
+            i++;
         }
     }
     public static void amountOfDifferentsHastaghOnADay(String date){

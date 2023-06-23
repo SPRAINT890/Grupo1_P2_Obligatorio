@@ -2,7 +2,7 @@ package Entities;
 
 import uy.edu.um.prog2.adt.MyHash.HashTableCerradoImpl;
 
-public class User {
+public class User implements Comparable<User> {
     private Long id;
     private String name;
     private boolean verified;
@@ -34,5 +34,10 @@ public class User {
 
     public HashTableCerradoImpl<Long, Tweet> getListTweets() {
         return listTweets;
+    }
+
+    @Override
+    public int compareTo(User o) {
+        return this.listTweets.getSize() - o.getListTweets().getSize();
     }
 }
