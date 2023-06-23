@@ -210,8 +210,12 @@ public class main {
                         idUser++;
                         newTweet.setUsuario(newUser);
                     }else {
+                        if (user_favourites.contains(".")){
+                            isFoundUser.setLike(Integer.parseInt(user_favourites.split("\\.")[0]));
+                        }else {
+                            isFoundUser.setLike(Integer.valueOf(user_favourites));
+                        }
                         isFoundUser.getListTweets().insert(Long.valueOf(id), newTweet);
-                        isFoundUser.setLike(isFoundUser.getLike() + Integer.valueOf(user_favourites));
                         newTweet.setUsuario(isFoundUser);
                     }
 
