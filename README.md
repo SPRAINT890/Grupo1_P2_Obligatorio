@@ -6,7 +6,7 @@
 1. [Instalacion del Programa](#instalacion-del-programa)
 2. [Diagrama UML de Clases](#diagrama-uml-de-clases)
 3. [Descripción de los Procesos](#descripción-de-la-carga-de-datos)
-4. [Medición de Eficiencia de la Aplicación](#medición-de-eficiencia-de-la-aplicación)
+4. [Medición de Eficiencia de la Aplicación](#medicion-de-eficiencia-de-la-aplicación)
 
 
 
@@ -18,7 +18,8 @@
 4. Clonar [repo de tads](https://github.com/SPRAINT890/Grupo1_P2_Tads.git), a la raiz y marcar src como Source Root
 5. Extraer los csv y el txt, en la raiz
 
-El projecto nos deberia quedar algo parecido a esta imagen ![Tads_Java](readme/Tads_Java.png)
+El projecto nos deberia quedar algo parecido a esta imagen 
+![Tads_Java](readme/Tads_Java.png)
 
 ## Diagrama UML de Clases
 ![Diagrama_UML](readme/uml.png)
@@ -29,7 +30,7 @@ Esta funcion se encarga de leer, crear las entidades para cada fila del csv y gu
 Por otro lado hay otra funcion llamada `loadDrivers(){...}` la cual se encarga de leer por linea el archivo txt y guardar en 2 variables el nombre de cada piloto, para el caso de **Nyck de Vries** se limita el spliter para que solo parta los espacios en 2. posteriormente se crea una entidad driver, y se guarda en un array.
 
 
-## Medicion de eficiencia de la aplicacion
+## Medicion de eficiencia de la aplicación
 
 ### Programa Usados
 - **Intellij Profiler**
@@ -72,7 +73,7 @@ Por otro lado hay otra funcion llamada `loadDrivers(){...}` la cual se encarga d
 - Funcion 5
   - **Descripcion:** Top 7 cuentas con más favoritos
   - **Memoria RAM consumida:**  931 MB
-  - **Tiempo de ejecución promedio:**  124s
+  - **Tiempo de ejecución promedio:**  145s
 
 
 - Funcion 6
