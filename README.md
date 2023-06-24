@@ -5,7 +5,7 @@
 
 1. [Instalacion del Programa](#instalacion-del-programa)
 2. [Diagrama UML de Clases](#diagrama-uml-de-clases)
-3. [Descripción de los Procesos](#descripción-de-los-procesos)
+3. [Descripción de los Procesos](#descripción-de-la-carga-de-datos)
 4. [Medición de Eficiencia de la Aplicación](#medición-de-eficiencia-de-la-aplicación)
 
 
@@ -23,12 +23,16 @@ El projecto nos deberia quedar algo parecido a esta imagen ![Tads_Java](readme/T
 ## Diagrama UML de Clases
 ![Diagrama_UML](readme/uml.png)
 
-## Descripción de la carga de datos
-para cargar los datos del CSV se utilizo la libreria **Apache CSV** y se creo una funcion `public static void load_csv(){...}`.
+## Descripción de la Carga de Datos
+para cargar los datos del CSV se debe dar valor a una constante que define al iniciar el progrma cual de los 2 archivos se desea cargar, para leer el csv se utilizo la libreria **Apache CSV** y se creo una funcion `load_csv(){...}`. 
 Esta funcion se encarga de leer, crear las entidades para cada fila del csv y guardar en un hashtable cerrado para el posterior uso en el programa, tambien maneja algunas condiciones de mal formateo del csv, ya que durante el desarrollo del obligatorio nos dimos cuenta que hay datos que no tienen valor o tienen valores distinto al estipulado, por esta razon hay algunos tweets que no se registran por falta de datos.
+Por otro lado hay otra funcion llamada `loadDrivers(){...}` la cual se encarga de leer por linea el archivo txt y guardar en 2 variables el nombre de cada piloto, para el caso de **Nyck de Vries** se limita el spliter para que solo parta los espacios en 2. posteriormente se crea una entidad driver, y se guarda en un array.
 
 
 ## Medicion de eficiencia de la aplicacion
+
+### Programa Usados
+- **Intellij Profiler**
 
 ### Specs usadas para las mediciones
 - **Procesador** Ryzen 7 5700g
