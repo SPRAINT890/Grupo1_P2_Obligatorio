@@ -272,7 +272,7 @@ public class main {
                 clear_console();
                 System.out.println("Valor erroneo");
                 Thread.sleep(4000);
-                continue;
+                break;
             }
             if (valor == 1){
                 clear_console();
